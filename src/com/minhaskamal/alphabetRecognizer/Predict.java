@@ -7,28 +7,27 @@ package com.minhaskamal.alphabetRecognizer;
 
 
 import java.io.*;
-import org.opencv.core.*;
-import org.opencv.highgui.Highgui;
 
 import com.minhaskamal.alphabetRecognizer.weightedPixel.WeightedStandardPixelTrainer;
+import com.minhaskamal.egami.matrix.Matrix;
 
 
 public class Predict {
 
 	
-	public static void main(String[] args) {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	public static void main(String[] args) throws Exception {
 		
 		String sampleImage = "src/res/sample/test.png";
-		String Experience = "src/res/knowledge/KnowledgeAlphabet.log";
+		String experience = "src/res/knowledge/KnowledgeAlphabet.log";
+		String output = sampleImage + "Content.txt";
 		
-		String str = ImageToContentString(sampleImage, Experience);
+		String str = ImageToContentString(sampleImage, experience);
 		
-		System.out.println(str);
+		System.out.println("\n\n ###String: "+str+"\n\n");
 		
 		//store the result in hard disk
 		try {
-			FileWriter writer = new FileWriter(new File(sampleImage + "Content.txt"));
+			FileWriter writer = new FileWriter(new File(output));
 			writer.write(str);
 			writer.close();
 		} catch (IOException e) {
@@ -44,8 +43,9 @@ public class Predict {
 	 * @param path
 	 * @param Experience
 	 * @return
+	 * @throws Exception 
 	 */
-	public static String ImageToContentString(String path, String Experience){
+	public static String ImageToContentString(String path, String Experience) throws Exception{
 		String string = "";
 		
 		System.out.println("Loading Knowledge...");
@@ -57,9 +57,9 @@ public class Predict {
 //		CvGBTrees gbt = new CvGBTrees();
 //		gbt.load("src/alphabetCollection/resource/Alphabets/AlphabetDetectorGBT.xml");
 		
-		Mat matImage = Highgui.imread(path, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+		Matrix matImage = new Matrix(path, Matrix.BLACK_WHITE);
 		
-		Mat matTemp;
+		Matrix matTemp;
 		int[] a = new int[2];
 		
 		
@@ -72,10 +72,10 @@ public class Predict {
 				break;
 			}
 			
-			matTemp = matImage.submat(a[0]-verticalSpace, a[1]+verticalSpace, 0, matImage.width());
+			matTemp = matImage.subMatrix(a[0]-verticalSpace, a[1]+verticalSpace, 0, matImage.getCols());
 			
 			
-			Mat matTemp2;
+			Matrix matTemp2;
 			int x[] = new int[2];
 			int y[] = new int[2];
 			
@@ -85,14 +85,14 @@ public class Predict {
 					break;
 				}
 				
-				matTemp2 = matTemp.submat(0, matTemp.height(), x[0], x[1]);
+				matTemp2 = matTemp.subMatrix(0, matTemp.getRows(), x[0], x[1]);
 				
 				
-				y = ObjectEdgeDetector.upRangeDownRange(matTemp2, 0, matTemp2.height()-1);
+				y = ObjectEdgeDetector.upRangeDownRange(matTemp2, 0, matTemp2.getRows()-1);
 				if(y[1]==0){
 					break;
 				}
-				matTemp2 = matTemp2.submat(y[0]-verticalSpace, y[1]+verticalSpace, 0, matTemp2.width());
+				matTemp2 = matTemp2.subMatrix(y[0]-verticalSpace, y[1]+verticalSpace, 0, matTemp2.getCols());
 				
 				//detect
 				int f = weightedStandardPixelTrainer.predict(matTemp2);

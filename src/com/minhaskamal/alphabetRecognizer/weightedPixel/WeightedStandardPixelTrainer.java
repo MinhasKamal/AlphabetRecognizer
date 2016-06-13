@@ -5,17 +5,18 @@
 
 package com.minhaskamal.alphabetRecognizer.weightedPixel;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.*;
-import org.opencv.core.*;
-import org.opencv.highgui.Highgui;
-import org.opencv.imgproc.Imgproc;
+
+import com.minhaskamal.egami.matrix.Matrix;
 
 public class WeightedStandardPixelTrainer {
-	public static final Size imageDataSize60 = new Size(60, 60);
-	public static final Size imageDataSize90 = new Size(90, 90);
-	public static final Size imageDataSize120 = new Size(120, 120);
+	public static final int[] imageDataSize60 = new int[]{60, 60};
+	public static final int[] imageDataSize90 = new int[]{60, 60};
+	public static final int[] imageDataSize120 = new int[]{60, 60};
 	
-	private Size imageSize;
+	private int[] imageSize;
 	
 	private WeightedStandardImage weightedStandardImage;
 	
@@ -25,7 +26,7 @@ public class WeightedStandardPixelTrainer {
 		this.weightedStandardImage = new WeightedStandardImage();
 	}
 	
-	public WeightedStandardPixelTrainer(Size imageSize){
+	public WeightedStandardPixelTrainer(int[] imageSize){
 		this.imageSize = imageSize;
 		this.weightedStandardImage = new WeightedStandardImage();
 	}
@@ -37,8 +38,9 @@ public class WeightedStandardPixelTrainer {
 	 * @param imageFilePaths
 	 * @param ids
 	 * @return
+	 * @throws Exception 
 	 */
-	public void train(String[] imageFilePaths, Integer[] ids){
+	public void train(String[] imageFilePaths, Integer[] ids) throws Exception{
 		if(imageFilePaths.length!=ids.length){	//data check
 			System.out.println("Incompatible data.");
 			return ;
@@ -46,7 +48,7 @@ public class WeightedStandardPixelTrainer {
 		
 		int[] variety = varietyIn(ids);
 		int types = variety[variety.length-1];
-		int standardImageRow = (int)imageSize.width, standardImageCol = (int)imageSize.height;
+		int standardImageRow = imageSize[0], standardImageCol = imageSize[1];
 		WeightedStandardImage weightedStandardImage = new WeightedStandardImage(types, imageSize);
 		
 		
@@ -55,11 +57,11 @@ public class WeightedStandardPixelTrainer {
 		}
 		
 		
-		Mat mat;
+		Matrix mat;
 		int typeNo=0, index=0;
 		for(String imageFilePath : imageFilePaths){
-			mat = Highgui.imread(imageFilePath, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
-			Imgproc.resize(mat, mat, imageSize);
+			mat = new Matrix(imageFilePath, Matrix.BLACK_WHITE);
+			mat = resize(mat, imageSize[1], imageSize[0]);
 			mat = toMedial(mat);
 			
 			double sumValue = 0;
@@ -76,7 +78,7 @@ public class WeightedStandardPixelTrainer {
 				for(int col=0; col<standardImageCol; col++){
 					sumValue = (weightedStandardImage.getStandardImages(typeNo, row, col) *
 							weightedStandardImage.getWeight(typeNo)) +
-							mat.get(row, col)[0];
+							mat.pixels[row][col][0];
 					
 					value = (int) sumValue / (weightedStandardImage.getWeight(typeNo)+1);
 					
@@ -132,20 +134,20 @@ public class WeightedStandardPixelTrainer {
 	 * @param mat
 	 * @return
 	 */
-	private Mat toMedial(Mat mat){
-		Mat mat2 = new Mat(mat.size(), mat.type());
+	private Matrix toMedial(Matrix mat){
+		Matrix mat2 = new Matrix(mat.getRows(), mat.getCols(), mat.getType());
 		
 		double mediumPixel = 0;
 		double sumOfPixelByRow = 0;
 		double sumOfPixelByColInRow = 0;
 		
-		int rows = mat.rows();
-		int cols = mat.cols();
+		int rows = mat.getRows();
+		int cols = mat.getCols();
 		
 		for(int x=0; x<rows; x++){
 			sumOfPixelByRow=0;
 			for(int y=0; y<cols; y++){
-				sumOfPixelByRow = sumOfPixelByRow + mat.get(x, y)[0];
+				sumOfPixelByRow = sumOfPixelByRow + mat.pixels[x][y][0];
 			}
 			
 			sumOfPixelByRow = sumOfPixelByRow/cols;
@@ -161,7 +163,7 @@ public class WeightedStandardPixelTrainer {
 		int pixelValue = 0;
 		for(int x=0; x<rows; x++){
 			for(int y=0; y<cols; y++){
-				pixelValue = (int) mat.get(x, y)[0];
+				pixelValue = (int) mat.pixels[x][y][0];
 				
 				mediumValue = (int) (pixelValue*perfectMediumPixel/mediumPixel);
 				
@@ -169,7 +171,7 @@ public class WeightedStandardPixelTrainer {
 					mediumValue=255;
 				}
 				
-				mat2.put(x, y, mediumValue);
+				mat2.pixels[x][y][0] = mediumValue;
 			}
 		}
 		
@@ -209,7 +211,7 @@ public class WeightedStandardPixelTrainer {
 		int height = Integer.parseInt(mainString.substring(startIndex, stopIndex));
 
 		
-		imageSize = new Size(width, height);
+		imageSize = new int[]{height, width};
 		
 		
 		WeightedStandardImage weightedStandardImage = new WeightedStandardImage(types, imageSize);
@@ -297,11 +299,11 @@ public class WeightedStandardPixelTrainer {
 	 * @param matSample
 	 * @return
 	 */
-	public int predict(Mat matSample){
+	public int predict(Matrix matSample){
 		int id = 0;
 		float similarity = 0;
 		
-		Imgproc.resize(matSample, matSample, imageSize);
+		matSample = resize(matSample, imageSize[1], imageSize[0]);
 //		matSample = toMedial(matSample);
 		
 		int types = weightedStandardImage.getTypes();
@@ -330,16 +332,16 @@ public class WeightedStandardPixelTrainer {
 	 * @param mat2
 	 * @return
 	 */
-	private float compareMatDiv(Mat mat1, Mat mat2){
-		if(!mat1.size().equals(mat2.size())){
+	private float compareMatDiv(Matrix mat1, Matrix mat2){
+		if(mat1.getRows()!=mat2.getRows() || mat1.getCols()!=mat2.getCols()){
 			System.out.println("Incompatible Data!");
 			return -1;
 		}
 		
 		float similarity = 0;
 		
-		int rows = mat1.rows();
-		int cols = mat1.cols();
+		int rows = mat1.getRows();
+		int cols = mat1.getCols();
 		
 		float pixel1 = 0;
 		float pixel2 = 0;
@@ -351,8 +353,8 @@ public class WeightedStandardPixelTrainer {
 			sumOfSimilarityByRow = 0;
 			
 			for(int col=0; col<cols; col++){
-				pixel1 = (float) mat1.get(row, col)[0];
-				pixel2 = (float) mat2.get(row, col)[0];
+				pixel1 = (float) mat1.pixels[row][col][0];
+				pixel2 = (float) mat2.pixels[row][col][0];
 				
 				if(pixel1==pixel2){
 					pixelSimilarity = 100;
@@ -388,16 +390,16 @@ public class WeightedStandardPixelTrainer {
 	 * @param mat2
 	 * @return
 	 */
-	private float compareMatDif(Mat mat1, Mat mat2){
-		if(!mat1.size().equals(mat2.size())){
+	private float compareMatDif(Matrix mat1, Matrix mat2){
+		if(mat1.getRows()!=mat2.getRows() || mat1.getCols()!=mat2.getCols()){
 			System.out.println("Incompatible Data!");
 			return -1;
 		}
 		
 		float similarity = 0;
 		
-		int rows = mat1.rows();
-		int cols = mat1.cols();
+		int rows = mat1.getRows();
+		int cols = mat1.getCols();
 		
 		float pixel1 = 0;
 		float pixel2 = 0;
@@ -409,8 +411,8 @@ public class WeightedStandardPixelTrainer {
 			sumOfSimilarityByRow = 0;
 			
 			for(int col=0; col<cols; col++){
-				pixel1 = (float) mat1.get(row, col)[0];
-				pixel2 = (float) mat2.get(row, col)[0];
+				pixel1 = (float) mat1.pixels[row][col][0];
+				pixel2 = (float) mat2.pixels[row][col][0];
 				
 				if(pixel1==pixel2){
 					pixelSimilarity = 100;
@@ -441,6 +443,21 @@ public class WeightedStandardPixelTrainer {
 	}
 	
 	
+	//MATRIX_RESIZER////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * @return may not be the same type as the input <code>Matrix</code>
+	 */
+	public Matrix resize(Matrix matrix, int scaledWidth, int scaledHeight){
+		BufferedImage originalBufferedImage = Matrix.matrixToBufferedImage(matrix);
+		BufferedImage scaledBufferedImage = new BufferedImage(scaledWidth, scaledHeight, originalBufferedImage.getType());
+	
+		Graphics2D g = scaledBufferedImage.createGraphics();
+		g.drawImage(originalBufferedImage, 0, 0, scaledWidth, scaledHeight, null); 
+		g.dispose();
+		
+		return Matrix.bufferedImageToMatrix(scaledBufferedImage, matrix.getType());
+	}
+	
 	//GETTER_SETTER////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public WeightedStandardImage getWeightedStandardImage(){
@@ -451,7 +468,6 @@ public class WeightedStandardPixelTrainer {
 	
 	/**///test only
 	public static void main(String[] args) {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		//list of image files//////////////////////////////////////////////////////////////////////////////////////////
 		/*String[] stringFilePaths = {"resource/Face_Male_Female/images1", "resource/Face_Male_Female/images2"};
@@ -496,17 +512,21 @@ public class WeightedStandardPixelTrainer {
 		System.out.println(weightedStandardImage.dump());*/
 		
 		//sample file
-		String imageFilePath = "C:\\Users\\admin\\Desktop\\1.jpg";
-		Mat mat = Highgui.imread(imageFilePath, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+		String imageFilePath = "res/sample/test.png";
+		try {
+			Matrix mat = new Matrix(imageFilePath, Matrix.BLACK_WHITE);
+			int prediction = weightedStandardPixelTrainer.predict(mat);
+			System.out.println("Prediction is: " + prediction);
+			
+			
+			/*Mat mat = weightedStandardImage.getStandardImages(0);
+			Highgui.imwrite("resource/Face_Male_Female/stdImage4.png" , mat);*/
+			
+			System.out.println("Operation Successful!!!");
+		} catch (IOException e) {
+			System.out.println("Error in File Path!!!");
+		}
 		
-		int prediction = weightedStandardPixelTrainer.predict(mat);
-		System.out.println("Prediction is: " + prediction);
-		
-		
-		/*Mat mat = weightedStandardImage.getStandardImages(0);
-		Highgui.imwrite("resource/Face_Male_Female/stdImage4.png" , mat);*/
-		
-		System.out.println("Operation Successful!!!");
 	}
 	/**/
 }

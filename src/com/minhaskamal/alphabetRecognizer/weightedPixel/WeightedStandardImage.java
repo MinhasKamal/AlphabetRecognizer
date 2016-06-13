@@ -8,36 +8,35 @@ package com.minhaskamal.alphabetRecognizer.weightedPixel;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.opencv.core.*;
-import org.opencv.highgui.Highgui;
+import com.minhaskamal.egami.matrix.Matrix;
 
 public class WeightedStandardImage {
 	private int types;
-	private Size size;
+	private int[] size;
 	private int[] ids;
 	private int[] weights;
-	private Mat[] standardImages;
+	private Matrix[] standardImages;
 	
 	
-	public WeightedStandardImage(int types, Size size) {
+	public WeightedStandardImage(int types, int[] size) {
 		this.types = types;
 		this.size = size;
 		this.ids = new int[types];
 		this.weights = new int[types];
-		this.standardImages = new Mat[types];
+		this.standardImages = new Matrix[types];
 		for(int i=0; i<types; i++){
-			standardImages[i] = new Mat(size, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+			standardImages[i] = new Matrix(size[0], size[1], Matrix.BLACK_WHITE);
 		}
 	}
 	
 	public WeightedStandardImage() {
 		this.types = 0;
-		this.size = new Size(0, 0);
+		this.size = new int[]{0, 0};
 		this.ids = new int[types];
 		this.weights = new int[types];
-		this.standardImages = new Mat[types];
+		this.standardImages = new Matrix[types];
 		for(int i=0; i<types; i++){
-			standardImages[i] = new Mat(size, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+			standardImages[i] = new Matrix(size[0], size[1], Matrix.BLACK_WHITE);
 		}
 	}
 	
@@ -47,7 +46,7 @@ public class WeightedStandardImage {
 	 * @return
 	 */
 	public String dump(){
-		int rows = (int) size.height, cols = (int) size.width;
+		int rows = this.size[0], cols = this.size[1];
 		String content = "<WeightedStandardImage/>\n<types>" + types + "</types>\n<size>" +
 				rows + "," + cols + "</size>\n<data>";
 		
@@ -61,7 +60,7 @@ public class WeightedStandardImage {
 			for(int row=0; row<rows; row++){
 				line = "";
 				for(int col=0; col<cols; col++){
-					line = line + (short)standardImages[i].get(row, col)[0] + ",";
+					line = line + (short)standardImages[i].pixels[row][col][0] + ",";
 				}
 				imageType = imageType + line + "\n";
 			}
@@ -95,8 +94,8 @@ public class WeightedStandardImage {
 		return types;
 	}
 	
-	public Size getSize(){
-		return size;
+	public int[] getSize(){
+		return this.size.clone();
 	}
 	
 	public int getId(int index){
@@ -135,25 +134,25 @@ public class WeightedStandardImage {
 	
 	public void setStandardImages(int index, int row, int col, short pixel){
 		if(index<types){
-			standardImages[index].put(row, col, pixel);
+			standardImages[index].pixels[row][col][0] = pixel;
 		}
 	}
 	
-	public void setStandardImages(Mat newMat, int index){
+	public void setStandardImages(Matrix newMat, int index){
 		if(index<types){
 			standardImages[index] = newMat;
 		}
 	}
 	
 	public short getStandardImages(int index, int row, int col){
-		if(index<types && row<size.width && col<size.height){
-			return (short) standardImages[index].get(row, col)[0];
+		if(index<types && row<size[0] && col<size[1]){
+			return (short) standardImages[index].pixels[row][col][0];
 		}else{
 			return 0;
 		}
 	}
 	
-	public Mat getStandardImages(int index){
+	public Matrix getStandardImages(int index){
 		if(index<types){
 			return standardImages[index];
 		}else{
@@ -164,7 +163,7 @@ public class WeightedStandardImage {
 	
 	//test only
 	public static void main(String[] args) {
-		WeightedStandardImage weightedStandardImage = new WeightedStandardImage(5, new Size(40, 40));
+		WeightedStandardImage weightedStandardImage = new WeightedStandardImage(5, new int[]{40, 40});
 		
 		System.out.println(weightedStandardImage.dump());
 	}

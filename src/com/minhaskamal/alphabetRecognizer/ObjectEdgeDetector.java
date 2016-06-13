@@ -5,7 +5,8 @@
 
 package com.minhaskamal.alphabetRecognizer;
 
-import org.opencv.core.Mat;
+import com.minhaskamal.egami.matrix.Matrix;
+
 
 public class ObjectEdgeDetector {
 	private static int darkValue = 150;
@@ -17,15 +18,15 @@ public class ObjectEdgeDetector {
 	 * @param startPosition
 	 * @return
 	 */
-	public static int[] leftRightRange(Mat mat, int startPosition){
-		int width = mat.width(), height = mat.height();
+	public static int[] leftRightRange(Matrix mat, int startPosition){
+		int lenght = mat.getCols(), height = mat.getRows();
 		int[] x = new int[2];
 		
 		boolean blackDotFound = false;
 		int position, i;
-		for(position=startPosition+1; position<width && !blackDotFound; position++){
+		for(position=startPosition+1; position<lenght && !blackDotFound; position++){
 			for(i=0; i<height; i++){
-				if(mat.get(i, position)[0]<darkValue){
+				if(mat.pixels[i][position][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}
@@ -38,10 +39,10 @@ public class ObjectEdgeDetector {
 		
 		x[0] = position-1-buffer;
 		
-		for(; position<width && blackDotFound; position++){
+		for(; position<lenght && blackDotFound; position++){
 			blackDotFound=false;
 			for(i=0; i<height; i++){
-				if(mat.get(i, position)[0]<darkValue){
+				if(mat.pixels[i][position][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}
@@ -60,15 +61,15 @@ public class ObjectEdgeDetector {
 	 * @param startPosition
 	 * @return
 	 */
-	public static int[] upDownRange(Mat mat, int startPosition){
-		int width = mat.width(), height = mat.height();
+	public static int[] upDownRange(Matrix mat, int startPosition){
+		int length = mat.getCols(), height = mat.getRows();
 		int[] y = new int[2];
 		
 		boolean blackDotFound = false;
 		int position, i;
 		for(position=startPosition+1; position<height && !blackDotFound; position++){
-			for(i=0; i<width; i++){
-				if(mat.get(position, i)[0]<darkValue){
+			for(i=0; i<length; i++){
+				if(mat.pixels[position][i][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}
@@ -83,8 +84,8 @@ public class ObjectEdgeDetector {
 		
 		for(; position<height && blackDotFound; position++){
 			blackDotFound=false;
-			for(i=0; i<width; i++){
-				if(mat.get(position, i)[0]<darkValue){
+			for(i=0; i<length; i++){
+				if(mat.pixels[position][i][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}
@@ -104,8 +105,8 @@ public class ObjectEdgeDetector {
 	 * @param stopPosition
 	 * @return
 	 */
-	public static int[] upRangeDownRange(Mat mat, int startPosition, int stopPosition){
-		int width = mat.width(), height = mat.height();
+	public static int[] upRangeDownRange(Matrix mat, int startPosition, int stopPosition){
+		int width = mat.getCols(), height = mat.getRows();
 		int[] y = new int[2];
 		
 		if(stopPosition>height){
@@ -116,7 +117,7 @@ public class ObjectEdgeDetector {
 		int position, i;
 		for(position=startPosition+1; position<stopPosition && !blackDotFound; position++){
 			for(i=0; i<width; i++){
-				if(mat.get(position, i)[0]<darkValue){
+				if(mat.pixels[position][i][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}
@@ -132,7 +133,7 @@ public class ObjectEdgeDetector {
 		blackDotFound=false;
 		for(position=stopPosition; position>y[0] && !blackDotFound; position--){
 			for(i=0; i<width; i++){
-				if(mat.get(position, i)[0]<darkValue){
+				if(mat.pixels[position][i][0]<darkValue){
 					blackDotFound=true;
 					break;
 				}

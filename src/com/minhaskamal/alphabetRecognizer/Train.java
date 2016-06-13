@@ -8,19 +8,14 @@ package com.minhaskamal.alphabetRecognizer;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.highgui.Highgui;
-
 import com.minhaskamal.alphabetRecognizer.weightedPixel.WeightedStandardImage;
 import com.minhaskamal.alphabetRecognizer.weightedPixel.WeightedStandardPixelTrainer;
+import com.minhaskamal.egami.matrix.Matrix;
 
 
 
 public class Train {
-	public static void main(String[] args) {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	public static void main(String[] args) throws Exception {
 		
 		//list of image files//////////////////////////////////////////////////////////////////////////////////////////
 		int types = 79;
@@ -59,7 +54,7 @@ public class Train {
 		
 		
 		//train/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		WeightedStandardPixelTrainer weightedStandardPixelTrainer = new WeightedStandardPixelTrainer(new Size(45, 45));
+		WeightedStandardPixelTrainer weightedStandardPixelTrainer = new WeightedStandardPixelTrainer(new int[]{45, 45});
 		
 		weightedStandardPixelTrainer.train(filePaths, ids);
 		WeightedStandardImage weightedStandardImage = weightedStandardPixelTrainer.getWeightedStandardImage();
@@ -67,8 +62,8 @@ public class Train {
 		
 		///test
 		for(int i=0; i<types; i++){		
-			Mat mat = weightedStandardImage.getStandardImages(i);
-			Highgui.imwrite("src/res/knowledge/imageRepresentation/stdImage " + i + ".png" , mat);
+			Matrix mat = weightedStandardImage.getStandardImages(i);
+			mat.write("src/res/knowledge/imageRepresentation/stdImage " + i + ".png");
 		}
 		
 		System.out.println("Operation Successful!!!");
