@@ -1,4 +1,4 @@
-# Alphabet Recognizer
+# :abc: Alphabet Recognizer
 #### Simple Optical Character Recognizer 
 
 [This Image processing program](http://minhaskamal.github.io/AlphabetRecognizer) can convert image of English writing to text. It simply uses **Template Matching** strategy for character recognition.
