@@ -11,4 +11,4 @@
 
 ### License
 
-<a rel="license" href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://cloud.githubusercontent.com/assets/5456665/18950087/fbe0681a-865f-11e6-9552-e59d038d5913.png" width="60em" height=auto/></a><br/><a href="https://github.com/MinhasKamal/AlphabetRecognizer">Alphabet Recognizer</a> is licensed under <a rel="license" href="https://opensource.org/licenses/MIT">MIT License</a>.
+<a rel="license" href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://cloud.githubusercontent.com/assets/5456665/18950087/fbe0681a-865f-11e6-9552-e59d038d5913.png" width="60em" height=auto/></a><br/><a href="https://github.com/MinhasKamal/AlphabetRecognizer">Alphabet Recognizer</a> project and its <a href="https://github.com/MinhasKamal/AlphabetRecognizer/tree/master/src/res/trainingData">Training Data</a> is licensed under <a rel="license" href="https://opensource.org/licenses/MIT">MIT License</a>.
