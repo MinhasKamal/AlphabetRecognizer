@@ -5,9 +5,14 @@
 [This Image processing program](http://minhaskamal.github.io/AlphabetRecognizer) can convert image of English writing to text. It simply uses **Template Matching** strategy for character recognition.
 
 ### How to Run?
-1. Import the project in your IDE, & integrate **[Egami](https://github.com/MinhasKamal/Egami)** in the build path.
-2. For training the machine run **[Train.java](https://github.com/MinhasKamal/AlphabetRecognizer/blob/master/src/com/minhaskamal/alphabetRecognizer/Train.java)**.
-3. For testing run **[Predict.java](https://github.com/MinhasKamal/AlphabetRecognizer/blob/master/src/com/minhaskamal/alphabetRecognizer/Predict.java)** (change file-paths in the *main* method according to your need).
+1. [Download Alphabet Recognizer](https://github.com/MinhasKamal/AlphabetRecognizer/archive/master.zip), and [import](http://www.codejava.net/ides/eclipse/import-existing-projects-into-eclipse-workspace) it in your IDE.
+2. [Download egami.jar](https://github.com/MinhasKamal/Egami/blob/release/Egami-V0.1.jar?raw=true) from [project- Egami](https://github.com/MinhasKamal/Egami), and [integrate](https://stackoverflow.com/a/3280451/4684058) it in the project's build path.
+3. For training the machine run **[Train.java](https://github.com/MinhasKamal/AlphabetRecognizer/blob/master/src/com/minhaskamal/alphabetRecognizer/Train.java)**.
+4. For testing run **[Predict.java](https://github.com/MinhasKamal/AlphabetRecognizer/blob/master/src/com/minhaskamal/alphabetRecognizer/Predict.java)** (change file-paths in the *main* method according to your need).
+
+### Downloads
+- [AlphabetRecognizer (zip)](https://github.com/MinhasKamal/AlphabetRecognizer/archive/master.zip)
+- [English Alphabet Dataset (zip)](https://github.com/MinhasKamal/AlphabetRecognizer/files/1084725/English.Alphabet.Dataset.zip)
 
 ### License
 
