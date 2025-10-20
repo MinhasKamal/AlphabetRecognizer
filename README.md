@@ -1,8 +1,8 @@
 # Alphabet Recognizer
 
-#### Simple Optical Character Recognizer 
+#### Simple Optical Character Recognizer
 
-[This Image processing program](http://minhaskamal.github.io/AlphabetRecognizer) can convert image of English writing (like- [this](https://user-images.githubusercontent.com/5456665/27283353-a5e44fdc-5515-11e7-9dbb-ee4e966c7cfe.png)) to text. It simply uses **Template Matching** strategy for character recognition.
+[This Image processing program](http://minhaskamal.github.io/AlphabetRecognizer) can convert an image of English writing (like- [this](https://user-images.githubusercontent.com/5456665/27283353-a5e44fdc-5515-11e7-9dbb-ee4e966c7cfe.png)) to text. It simply uses the **Template Matching** strategy leveraged by Bayes' theorem for character recognition.
 
 ### How to Run?
 1. [Download Alphabet Recognizer](https://github.com/MinhasKamal/AlphabetRecognizer/archive/master.zip), and [import](http://www.codejava.net/ides/eclipse/import-existing-projects-into-eclipse-workspace) it in your IDE.
@@ -20,6 +20,18 @@
 - [English Alphabet Dataset (zip)](https://github.com/MinhasKamal/AlphabetRecognizer/files/1084725/English.Alphabet.Dataset.zip)
 
 If you like this project, you may also like [GenderRecognizer- Plain Face Detector & Gender Recognizer](https://github.com/MinhasKamal/GenderRecognizer) and [SkinDetector- Detects Human Skin From Image](https://github.com/MinhasKamal/SkinDetector).
+
+### Citation
+
+```bibtex
+@misc{Minhas2016AlphabetRecognizer,
+  author    = {Kamal, Minhas},
+  title     = {Alphabet Recognizer: Simple Optical Character Recognizer},
+  year      = {2015},
+  publisher = {GitHub},
+  url       = {https://github.com/MinhasKamal/AlphabetRecognizer}
+}
+```
 
 ### License
 
